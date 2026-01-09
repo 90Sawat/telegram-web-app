@@ -1,96 +1,576 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖 Рабочий чат</title>
+    <title>🤖 Рабочая среда общения</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
         }
+        
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --light: #f8fafc;
+            --dark: #1e293b;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
+            color: white;
         }
-        .app {
-            width: 100%;
-            max-width: 400px;
+        
+        .app-container {
+            max-width: 500px;
+            margin: 0 auto;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 30px;
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 30px 25px;
             text-align: center;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
-        h1 {
-            margin-bottom: 20px;
+        
+        .app-header h1 {
             font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
         }
-        .status {
-            background: rgba(0,255,0,0.2);
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            font-size: 14px;
+        
+        .app-header p {
+            opacity: 0.9;
+            font-size: 15px;
         }
-        button {
-            background: white;
-            color: #2575fc;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 10px;
-            font-size: 16px;
-            margin: 10px;
-            cursor: pointer;
-            width: 100%;
-        }
-        button:hover {
-            background: #f0f0f0;
-        }
+        
         .telegram-badge {
             display: inline-block;
-            background: #0088cc;
+            background: rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 5px 10px;
-            border-radius: 15px;
+            padding: 8px 16px;
+            border-radius: 20px;
             font-size: 12px;
-            margin-top: 10px;
+            margin-top: 15px;
+            font-weight: 500;
+        }
+        
+        .app-content {
+            padding: 30px 25px;
+        }
+        
+        .user-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .user-info h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-details {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .user-detail {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .user-detail:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-online {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+        
+        .status-offline {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .feature-name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 25px 0;
+        }
+        
+        .btn {
+            padding: 18px;
+            border: none;
+            border-radius: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: white;
+            color: var(--secondary);
+        }
+        
+        .btn-primary:hover {
+            background: #f1f5f9;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+        
+        .connection-status {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+        
+        .connection-status.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+        
+        .connection-status.error {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+        
+        .chat-container {
+            height: 300px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            display: none;
+        }
+        
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            margin: 10px 0;
+            border-radius: 18px;
+            line-height: 1.4;
+        }
+        
+        .message-outgoing {
+            background: var(--primary);
+            margin-left: auto;
+        }
+        
+        .message-incoming {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .message-input {
+            display: none;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .message-input input {
+            flex: 1;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            color: white;
+            font-size: 16px;
+        }
+        
+        .message-input input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 30px;
+            max-width: 400px;
+            width: 100%;
+            color: var(--dark);
+        }
+        
+        .modal-header {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .modal-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 16px;
+            opacity: 0.7;
+        }
+        
+        @media (max-width: 480px) {
+            .app-container {
+                border-radius: 20px;
+            }
+            
+            .app-header {
+                padding: 25px 20px;
+            }
+            
+            .app-content {
+                padding: 20px;
+            }
+            
+            .stats-grid,
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="app">
-        <h1>🤖 Рабочая среда</h1>
-        <p>Приватное анонимное общение для сотрудников</p>
-        
-        <div class="telegram-badge">Telegram Web App</div>
-        
-        <div class="status" id="status">
-            Загрузка...
+    <div class="app-container" id="appContainer">
+        <div class="app-header">
+            <h1>🤖 Рабочая среда</h1>
+            <p>Приватное анонимное общение для сотрудников</p>
+            <div class="telegram-badge" id="telegramBadge">Telegram Web App</div>
         </div>
         
-        <button onclick="showMessage()">📨 Тестовое сообщение</button>
-        <button onclick="getUserInfo()">👤 Информация</button>
-        <button onclick="closeApp()">❌ Закрыть</button>
-        
-        <p style="font-size: 12px; margin-top: 20px; opacity: 0.8;">
-            Откройте через Telegram бота для полного функционала
-        </p>
+        <div class="app-content">
+            <!-- Экран загрузки -->
+            <div class="loading" id="loadingScreen">
+                <p>Загрузка приложения...</p>
+            </div>
+            
+            <!-- Основной интерфейс -->
+            <div id="mainInterface" style="display: none;">
+                <!-- Карточка пользователя -->
+                <div class="user-card">
+                    <div class="user-info">
+                        <h3>👤 Ваш профиль</h3>
+                        <div class="user-details">
+                            <div class="user-detail">
+                                <span class="detail-label">Никнейм:</span>
+                                <span class="detail-value" id="userNickname">Загрузка...</span>
+                            </div>
+                            <div class="user-detail">
+                                <span class="detail-label">Статус:</span>
+                                <span class="status-badge status-online" id="userStatus">Онлайн</span>
+                            </div>
+                            <div class="user-detail">
+                                <span class="detail-label">Диалог:</span>
+                                <span class="detail-value" id="userChatStatus">Нет</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="onlineCount">0</div>
+                            <div class="stat-label">Онлайн</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="activeChats">0</div>
+                            <div class="stat-label">Диалоги</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalUsers">0</div>
+                            <div class="stat-label">Пользователи</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Функции -->
+                <div class="features-grid">
+                    <div class="feature-card" onclick="openFeature('chat')">
+                        <span class="feature-icon">💬</span>
+                        <span class="feature-name">Диалоги</span>
+                    </div>
+                    <div class="feature-card" onclick="openFeature('search')">
+                        <span class="feature-icon">🔍</span>
+                        <span class="feature-name">Поиск</span>
+                    </div>
+                    <div class="feature-card" onclick="openFeature('profile')">
+                        <span class="feature-icon">👤</span>
+                        <span class="feature-name">Профиль</span>
+                    </div>
+                    <div class="feature-card" onclick="openFeature('settings')">
+                        <span class="feature-icon">⚙️</span>
+                        <span class="feature-name">Настройки</span>
+                    </div>
+                </div>
+                
+                <!-- Кнопки действий -->
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="startChat()" id="startChatBtn">
+                        <span>💬</span> Начать новый диалог
+                    </button>
+                    <button class="btn btn-secondary" onclick="changeNickname()">
+                        <span>📝</span> Сменить никнейм
+                    </button>
+                    <button class="btn btn-secondary" onclick="showHelp()">
+                        <span>ℹ️</span> Помощь и инструкции
+                    </button>
+                    <button class="btn btn-danger" onclick="endCurrentChat()" id="endChatBtn" style="display: none;">
+                        <span>❌</span> Завершить диалог
+                    </button>
+                </div>
+                
+                <!-- Чат (скрыт по умолчанию) -->
+                <div class="chat-container" id="chatContainer">
+                    <div class="loading" id="chatLoading">
+                        Загрузка сообщений...
+                    </div>
+                    <div id="chatMessages"></div>
+                </div>
+                
+                <!-- Ввод сообщения (скрыт по умолчанию) -->
+                <div class="message-input" id="messageInput">
+                    <input type="text" id="messageText" placeholder="Введите сообщение..." onkeypress="handleMessageKeyPress(event)">
+                    <button class="btn btn-primary" onclick="sendMessage()">Отправить</button>
+                </div>
+                
+                <!-- Статус подключения -->
+                <div class="connection-status" id="connectionStatus">
+                    🔄 Подключение к боту...
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальные окна -->
+    <div class="modal" id="nicknameModal">
+        <div class="modal-content">
+            <div class="modal-header">📝 Сменить никнейм</div>
+            <p style="margin-bottom: 15px; color: #64748b;">Введите новый никнейм (3-20 символов):</p>
+            <input type="text" class="modal-input" id="newNicknameInput" placeholder="Ваш новый ник" maxlength="20">
+            <div class="modal-buttons">
+                <button class="btn btn-primary" onclick="saveNickname()" style="flex: 1;">Сохранить</button>
+                <button class="btn btn-secondary" onclick="closeModal('nicknameModal')" style="flex: 1;">Отмена</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="searchModal">
+        <div class="modal-content">
+            <div class="modal-header">🔍 Поиск пользователя</div>
+            <p style="margin-bottom: 15px; color: #64748b;">Введите никнейм пользователя для поиска:</p>
+            <input type="text" class="modal-input" id="searchNicknameInput" placeholder="Ник пользователя">
+            <div class="modal-buttons">
+                <button class="btn btn-primary" onclick="searchUser()" style="flex: 1;">Найти</button>
+                <button class="btn btn-secondary" onclick="closeModal('searchModal')" style="flex: 1;">Отмена</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="helpModal">
+        <div class="modal-content">
+            <div class="modal-header">ℹ️ Помощь</div>
+            <div style="max-height: 300px; overflow-y: auto; padding-right: 10px;">
+                <h4 style="margin: 15px 0 10px 0; color: #334155;">Как использовать:</h4>
+                <p style="margin-bottom: 10px; color: #475569;">1. <strong>Установите никнейм</strong> - нажмите "Сменить никнейм"</p>
+                <p style="margin-bottom: 10px; color: #475569;">2. <strong>Найдите коллегу</strong> - используйте поиск по нику</p>
+                <p style="margin-bottom: 10px; color: #475569;">3. <strong>Начните диалог</strong> - нажмите "Начать диалог"</p>
+                <p style="margin-bottom: 10px; color: #475569;">4. <strong>Общайтесь</strong> - отправляйте сообщения</p>
+                
+                <h4 style="margin: 20px 0 10px 0; color: #334155;">Правила:</h4>
+                <p style="margin-bottom: 8px; color: #475569;">• Никнейм должен быть уникальным</p>
+                <p style="margin-bottom: 8px; color: #475569;">• Общайтесь уважительно</p>
+                <p style="margin-bottom: 8px; color: #475569;">• Не передавайте личную информацию</p>
+                
+                <h4 style="margin: 20px 0 10px 0; color: #334155;">Поддержка:</h4>
+                <p style="color: #475569;">По вопросам работы приложения обращайтесь к администратору.</p>
+            </div>
+            <div class="modal-buttons" style="margin-top: 20px;">
+                <button class="btn btn-primary" onclick="closeModal('helpModal')" style="flex: 1;">Закрыть</button>
+            </div>
+        </div>
     </div>
     
     <script>
-        // Проверяем, открыто ли в Telegram Web App
-        function checkTelegram() {
+        // Telegram Web App API
+        let tg = null;
+        let userData = null;
+        let currentChat = null;
+        
+        // Инициализация Telegram Web App
+        function initTelegramApp() {
             if (window.Telegram && Telegram.WebApp) {
-                const tg = Telegram.WebApp;
+                tg = Telegram.WebApp;
                 
                 // Раскрываем на весь экран
                 tg.expand();
@@ -98,50 +578,466 @@
                 // Говорим Telegram, что мы готовы
                 tg.ready();
                 
-                // Получаем информацию о пользователе
-                const user = tg.initDataUnsafe.user;
+                // Устанавливаем цвет фона
+                tg.setBackgroundColor('#667eea');
+                
+                // Показываем, что мы в Telegram
+                document.getElementById('telegramBadge').textContent = '✅ В Telegram Web App';
+                
+                // Получаем данные пользователя
+                const telegramUser = tg.initDataUnsafe.user;
+                if (telegramUser) {
+                    updateUserInfo({
+                        id: telegramUser.id,
+                        nickname: telegramUser.username || `user_${telegramUser.id}`,
+                        first_name: telegramUser.first_name,
+                        last_name: telegramUser.last_name
+                    });
+                }
+                
+                // Запрашиваем данные у бота
+                requestUserData();
                 
                 // Обновляем статус
-                document.getElementById('status').innerHTML = 
-                    '✅ Подключено к Telegram!<br>' +
-                    '👤 ID: ' + (user?.id || 'неизвестно') + '<br>' +
-                    '📅 ' + new Date().toLocaleTimeString();
+                updateConnectionStatus('success', '✅ Подключено к Telegram');
                 
-                console.log('Telegram Web App инициализирован');
-                console.log('User:', user);
+                // Скрываем экран загрузки, показываем основной интерфейс
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                    document.getElementById('mainInterface').style.display = 'block';
+                }, 1000);
                 
-                return true;
+                console.log('✅ Telegram Web App инициализирован');
+                
+                // Обработчик данных от бота
+                tg.onEvent('web_app_data', function(data) {
+                    console.log('📨 Данные от бота:', data);
+                    try {
+                        const parsed = JSON.parse(data);
+                        handleBotData(parsed);
+                    } catch (e) {
+                        console.error('Ошибка парсинга:', e);
+                    }
+                });
+                
+                // Обработчик закрытия
+                tg.onEvent('viewportChanged', function() {
+                    console.log('Размер окна изменен');
+                });
+                
             } else {
-                document.getElementById('status').innerHTML = 
-                    '⚠️ Откройте через Telegram бота<br>' +
-                    'Используйте команду /web в боте';
-                return false;
+                // Режим тестирования (не в Telegram)
+                console.log('⚠️ Не в Telegram Web App. Тестовый режим.');
+                
+                updateConnectionStatus('warning', '⚠️ Тестовый режим. Откройте через Telegram бота.');
+                
+                // Тестовые данные
+                updateUserInfo({
+                    id: 123456789,
+                    nickname: 'Тестовый_Пользователь',
+                    first_name: 'Тест',
+                    last_name: 'Пользователь'
+                });
+                
+                // Тестовая статистика
+                updateStats({
+                    online: 12,
+                    activeChats: 5,
+                    totalUsers: 47
+                });
+                
+                // Скрываем экран загрузки
+                setTimeout(() => {
+                    document.getElementById('loadingScreen').style.display = 'none';
+                    document.getElementById('mainInterface').style.display = 'block';
+                }, 800);
             }
         }
         
-        // Функции кнопок
-        function showMessage() {
-            alert('✅ Веб-приложение работает!\n\n' +
-                  'Отлично! Теперь можно подключать функции бота.');
+        // Запрос данных у бота
+        function requestUserData() {
+            if (tg && tg.sendData) {
+                tg.sendData(JSON.stringify({
+                    action: 'get_user_data',
+                    timestamp: new Date().getTime()
+                }));
+            }
         }
         
-        function getUserInfo() {
-            if (window.Telegram && Telegram.WebApp) {
-                const user = Telegram.WebApp.initDataUnsafe.user;
-                if (user) {
-                    alert('Информация о пользователе:\n\n' +
-                          'ID: ' + user.id + '\n' +
-                          'Имя: ' + (user.first_name || 'не указано') + '\n' +
-                          'Username: ' + (user.username || 'не указано'));
+        // Обработка данных от бота
+        function handleBotData(data) {
+            console.log('📊 Обработка данных:', data.type);
+            
+            switch (data.type) {
+                case 'user_data':
+                    updateUserInfo(data.data);
+                    break;
+                    
+                case 'stats':
+                    updateStats(data);
+                    break;
+                    
+                case 'chat_started':
+                    startChatUI(data);
+                    break;
+                    
+                case 'new_message':
+                    receiveMessage(data);
+                    break;
+                    
+                case 'chat_ended':
+                    endChatUI();
+                    break;
+                    
+                case 'error':
+                    showError(data.message);
+                    break;
+            }
+        }
+        
+        // Обновление информации о пользователе
+        function updateUserInfo(user) {
+            userData = user;
+            
+            document.getElementById('userNickname').textContent = user.nickname || 'Не указан';
+            
+            if (user.in_chat) {
+                document.getElementById('userStatus').textContent = 'В диалоге';
+                document.getElementById('userStatus').className = 'status-badge status-online';
+                document.getElementById('userChatStatus').textContent = 'Активен';
+                document.getElementById('startChatBtn').style.display = 'none';
+                document.getElementById('endChatBtn').style.display = 'flex';
+                
+                // Показываем чат
+                showChatInterface();
+            } else {
+                document.getElementById('userStatus').textContent = 'Свободен';
+                document.getElementById('userChatStatus').textContent = 'Нет';
+                document.getElementById('startChatBtn').style.display = 'flex';
+                document.getElementById('endChatBtn').style.display = 'none';
+                
+                // Скрываем чат
+                hideChatInterface();
+            }
+        }
+        
+        // Обновление статистики
+        function updateStats(stats) {
+            document.getElementById('onlineCount').textContent = stats.online || '0';
+            document.getElementById('activeChats').textContent = stats.activeChats || '0';
+            document.getElementById('totalUsers').textContent = stats.totalUsers || '0';
+        }
+        
+        // Обновление статуса подключения
+        function updateConnectionStatus(type, message) {
+            const statusElement = document.getElementById('connectionStatus');
+            statusElement.textContent = message;
+            statusElement.className = 'connection-status';
+            
+            if (type === 'success') {
+                statusElement.innerHTML = '✅ ' + message;
+            } else if (type === 'warning') {
+                statusElement.innerHTML = '⚠️ ' + message;
+                statusElement.classList.add('warning');
+            } else if (type === 'error') {
+                statusElement.innerHTML = '❌ ' + message;
+                statusElement.classList.add('error');
+            }
+        }
+        
+        // Функции открытия фич
+        function openFeature(feature) {
+            const featureNames = {
+                'chat': '💬 Диалоги',
+                'search': '🔍 Поиск пользователей',
+                'profile': '👤 Профиль',
+                'settings': '⚙️ Настройки'
+            };
+            
+            if (feature === 'search') {
+                openModal('searchModal');
+            } else if (feature === 'profile') {
+                openModal('nicknameModal');
+            } else {
+                alert(`Открываем ${featureNames[feature]}...\n\nЭта функция работает через Telegram бота.`);
+            }
+        }
+        
+        // Начать диалог
+        function startChat() {
+            openModal('searchModal');
+        }
+        
+        // Сменить никнейм
+        function changeNickname() {
+            openModal('nicknameModal');
+        }
+        
+        // Показать помощь
+        function showHelp() {
+            openModal('helpModal');
+        }
+        
+        // Поиск пользователя
+        function searchUser() {
+            const nickname = document.getElementById('searchNicknameInput').value.trim();
+            
+            if (!nickname) {
+                alert('Введите никнейм для поиска');
+                return;
+            }
+            
+            if (nickname.length < 3) {
+                alert('Никнейм должен быть не короче 3 символов');
+                return;
+            }
+            
+            if (tg && tg.sendData) {
+                tg.sendData(JSON.stringify({
+                    action: 'search_user',
+                    nickname: nickname
+                }));
+                
+                updateConnectionStatus('warning', '🔍 Поиск пользователя...');
+                closeModal('searchModal');
+            } else {
+                alert('Поиск доступен только в Telegram Web App');
+                closeModal('searchModal');
+            }
+        }
+        
+        // Сохранить никнейм
+        function saveNickname() {
+            const newNickname = document.getElementById('newNicknameInput').value.trim();
+            
+            if (!newNickname) {
+                alert('Введите новый никнейм');
+                return;
+            }
+            
+            if (newNickname.length < 3 || newNickname.length > 20) {
+                alert('Никнейм должен быть от 3 до 20 символов');
+                return;
+            }
+            
+            if (tg && tg.sendData) {
+                tg.sendData(JSON.stringify({
+                    action: 'change_nickname',
+                    nickname: newNickname
+                }));
+                
+                updateConnectionStatus('warning', '📝 Сохранение никнейма...');
+                closeModal('nicknameModal');
+            } else {
+                alert('Смена никнейма доступна только в Telegram Web App');
+                closeModal('nicknameModal');
+            }
+        }
+        
+        // Завершить текущий диалог
+        function endCurrentChat() {
+            if (confirm('Вы уверены, что хотите завершить диалог?')) {
+                if (tg && tg.sendData) {
+                    tg.sendData(JSON.stringify({
+                        action: 'end_chat'
+                    }));
+                    
+                    updateConnectionStatus('warning', '❌ Завершение диалога...');
+                } else {
+                    alert('Завершение диалога доступно только в Telegram Web App');
                 }
-            } else {
-                alert('Информация доступна только в Telegram');
             }
         }
         
+        // Показать интерфейс чата
+        function showChatInterface() {
+            document.getElementById('chatContainer').style.display = 'block';
+            document.getElementById('messageInput').style.display = 'flex';
+        }
+        
+        // Скрыть интерфейс чата
+        function hideChatInterface() {
+            document.getElementById('chatContainer').style.display = 'none';
+            document.getElementById('messageInput').style.display = 'none';
+        }
+        
+        // Начать чат (UI)
+        function startChatUI(data) {
+            if (data.success) {
+                updateConnectionStatus('success', `✅ Диалог начат с ${data.partner_nickname}`);
+                
+                // Обновляем статус пользователя
+                if (userData) {
+                    userData.in_chat = true;
+                    userData.partner = data.partner;
+                    updateUserInfo(userData);
+                }
+                
+                // Показываем чат
+                showChatInterface();
+                
+                // Очищаем сообщения
+                document.getElementById('chatMessages').innerHTML = '';
+                
+                // Добавляем приветственное сообщение
+                addMessageToChat({
+                    text: `Диалог начат с ${data.partner_nickname}. Начните общение!`,
+                    isSystem: true
+                });
+                
+            } else {
+                updateConnectionStatus('error', data.message || '❌ Ошибка начала диалога');
+            }
+        }
+        
+        // Завершить чат (UI)
+        function endChatUI() {
+            updateConnectionStatus('warning', '❌ Диалог завершен');
+            
+            // Обновляем статус пользователя
+            if (userData) {
+                userData.in_chat = false;
+                userData.partner = null;
+                updateUserInfo(userData);
+            }
+            
+            // Скрываем чат
+            hideChatInterface();
+            
+            // Добавляем системное сообщение
+            addMessageToChat({
+                text: 'Диалог завершен.',
+                isSystem: true
+            });
+        }
+        
+        // Получить сообщение
+        function receiveMessage(data) {
+            addMessageToChat({
+                text: data.message,
+                sender: data.sender,
+                isIncoming: true,
+                timestamp: data.timestamp
+            });
+        }
+        
+        // Отправить сообщение
+        function sendMessage() {
+            const messageInput = document.getElementById('messageText');
+            const message = messageInput.value.trim();
+            
+            if (!message) return;
+            
+            if (tg && tg.sendData) {
+                tg.sendData(JSON.stringify({
+                    action: 'send_message',
+                    message: message
+                }));
+                
+                // Добавляем сообщение в чат сразу
+                addMessageToChat({
+                    text: message,
+                    isIncoming: false
+                });
+                
+                // Очищаем поле ввода
+                messageInput.value = '';
+                
+            } else {
+                alert('Отправка сообщений доступна только в Telegram Web App');
+            }
+        }
+        
+        // Обработка нажатия Enter
+        function handleMessageKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        // Добавить сообщение в чат
+        function addMessageToChat(messageData) {
+            const chatMessages = document.getElementById('chatMessages');
+            const chatLoading = document.getElementById('chatLoading');
+            
+            // Скрываем загрузку если она есть
+            if (chatLoading) {
+                chatLoading.style.display = 'none';
+            }
+            
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${messageData.isIncoming ? 'message-incoming' : 'message-outgoing'}`;
+            
+            if (messageData.isSystem) {
+                messageElement.style.cssText = `
+                    background: rgba(245, 158, 11, 0.1);
+                    color: #f59e0b;
+                    text-align: center;
+                    max-width: 100%;
+                    margin: 20px auto;
+                `;
+            }
+            
+            let messageHTML = '';
+            
+            if (messageData.sender) {
+                messageHTML += `<div style="font-size: 12px; opacity: 0.8; margin-bottom: 5px;">${messageData.sender}</div>`;
+            }
+            
+            messageHTML += `<div>${messageData.text}</div>`;
+            
+            if (messageData.timestamp) {
+                messageHTML += `<div style="font-size: 10px; opacity: 0.6; margin-top: 5px; text-align: right;">${formatTime(messageData.timestamp)}</div>`;
+            }
+            
+            messageElement.innerHTML = messageHTML;
+            chatMessages.appendChild(messageElement);
+            
+            // Прокручиваем вниз
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Форматирование времени
+        function formatTime(timestamp) {
+            try {
+                const date = new Date(timestamp);
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } catch (e) {
+                return 'только что';
+            }
+        }
+        
+        // Показать ошибку
+        function showError(message) {
+            updateConnectionStatus('error', message);
+            
+            // Автоматически скрыть через 5 секунд
+            setTimeout(() => {
+                updateConnectionStatus('success', '✅ Подключено к Telegram');
+            }, 5000);
+        }
+        
+        // Открыть модальное окно
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+        }
+        
+        // Закрыть модальное окно
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            
+            // Очищаем поля
+            if (modalId === 'nicknameModal') {
+                document.getElementById('newNicknameInput').value = '';
+            } else if (modalId === 'searchModal') {
+                document.getElementById('searchNicknameInput').value = '';
+            }
+        }
+        
+        // Закрыть приложение
         function closeApp() {
-            if (window.Telegram && Telegram.WebApp) {
-                Telegram.WebApp.close();
+            if (tg) {
+                tg.close();
             } else {
                 alert('Закройте вкладку браузера');
             }
@@ -149,20 +1045,36 @@
         
         // Инициализация при загрузке
         document.addEventListener('DOMContentLoaded', function() {
-            checkTelegram();
+            initTelegramApp();
+            
+            // Тестовое обновление статистики каждые 30 секунд
+            setInterval(() => {
+                if (!tg) {
+                    updateStats({
+                        online: Math.floor(Math.random() * 30) + 10,
+                        activeChats: Math.floor(Math.random() * 15) + 3,
+                        totalUsers: Math.floor(Math.random() * 100) + 50
+                    });
+                }
+            }, 30000);
+            
+            // Запрашиваем данные каждые 60 секунд
+            setInterval(() => {
+                if (tg) {
+                    requestUserData();
+                }
+            }, 60000);
         });
         
-        // Обновляем время каждую минуту
-        setInterval(() => {
-            if (window.Telegram && Telegram.WebApp) {
-                const timeElement = document.getElementById('status');
-                const timeText = timeElement.innerHTML.replace(
-                    /\d{1,2}:\d{2}:\d{2}/,
-                    new Date().toLocaleTimeString()
-                );
-                timeElement.innerHTML = timeText;
+        // Закрытие модальных окон при клике вне их
+        window.onclick = function(event) {
+            const modals = document.getElementsByClassName('modal');
+            for (let modal of modals) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
             }
-        }, 60000);
+        };
     </script>
 </body>
 </html>
